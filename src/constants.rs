@@ -1,7 +1,8 @@
-use std::{fs::File, io::{Read, Write}};
+use std::fs::File;
+use std::io::prelude::*;
 use std::path::Path;
+use crate::utils;
 
-pub const GPIO_BASE_PATH: &'static str = "/sys/class/gpio";
 pub const EXPORT_PATH: &'static str = "/sys/class/gpio/export";
 pub const UNEXPORT_PATH: &'static str = "/sys/class/gpio/unexport";
 
@@ -55,7 +56,7 @@ impl GPIO_PIN {
         let mut file = File::create(EXPORT_PATH).expect("Can't open export file");
         file.write_all(
             (self.clone() as i32).to_string().as_bytes()
-        ).expect("Failed to write to export");
+        ).expect(format!("Failed to write to {}", EXPORT_PATH).as_str());
     }
 
 
@@ -64,7 +65,7 @@ impl GPIO_PIN {
         let mut file = File::create(UNEXPORT_PATH).expect("Can't open unexport file");
         file.write_all(
             (self.clone() as i32).to_string().as_bytes()
-        ).expect("Failed to write to unexport");
+        ).expect(format!("Failed to write to {}", UNEXPORT_PATH).as_str());
     }
 
 
@@ -94,12 +95,13 @@ impl GPIO_PIN {
     pub fn get_mode(&self) -> Mode {
 
         if !self.is_open() { panic!("GPIO pin is not opened or it doesn't exist"); }
-        let mut file = File::open(self.as_path()).expect("Can't open unexport file");
-        let mut contents = String::new();
-        let _ = file.read_to_string(&mut contents);
-        println!("content: {}", contents.as_str());
+        let contents = utils::read_sys_file(
+            format!("{}/direction", &self.as_path()).as_str()
+        ).expect("Can't read file content");
         match contents.as_str() {
+            "in\n" => Mode::IN,
             "in" => Mode::IN,
+            "out\n" => Mode::OUT,
             "out" => Mode::OUT,
             _ => panic!("Invalid mode")
         }
@@ -109,13 +111,14 @@ impl GPIO_PIN {
 
     pub fn get_value(&self) -> Value {
         if !self.is_open() { panic!("GPIO pin is not opened or it doesn't exist"); }
-        let mut file = File::open(self.as_path()).expect("Can't open unexport file");
-        let mut contents = String::new();
-        let _ = file.read_to_string(&mut contents);
-        println!("content: {}", contents.as_str());
+        let contents = utils::read_sys_file(
+            format!("{}/value", &self.as_path()).as_str()
+        ).expect("Can't read file content");
         match contents.as_str() {
             "0" => Value::LOW,
             "1" => Value::HIGH,  
+            "0\n" => Value::LOW,
+            "1\n" => Value::HIGH,
             _ => panic!("Invalid value")
         }
     }

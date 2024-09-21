@@ -1,8 +1,6 @@
 use crate::constants::*;
-use crate::utils;
 use std::fs::File;
 use std::io::prelude::*;
-use std::path::Path;
 
 pub struct PinControler {
     gpio: GPIO_PIN,

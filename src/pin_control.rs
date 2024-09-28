@@ -1,3 +1,5 @@
+#![allow(dead_code)]
+
 use crate::constants::*;
 use std::fs::File;
 use std::io::prelude::*;

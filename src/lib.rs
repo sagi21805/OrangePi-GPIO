@@ -1,6 +1,8 @@
 mod constants;
 mod pin_control;
 mod utils;
+mod gpio;
+use gpio::*;
 use constants::*;
 use pin_control::*;
 use std::thread::sleep;

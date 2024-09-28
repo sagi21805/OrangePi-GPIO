@@ -4,8 +4,6 @@ use std::io::prelude::*;
 
 pub struct PinControler {
     gpio: GPIO_PIN,
-    pub mode: Mode,
-    pub value: Value 
 }
 
 impl PinControler {
@@ -13,14 +11,9 @@ impl PinControler {
 
     pub fn new(gpio: GPIO_PIN) -> Self {
         
-        gpio.open();
-        let mode = gpio.get_mode();
-        let value = gpio.get_value();
-        
+        gpio.open();        
         PinControler {
             gpio,
-            mode,
-            value
         }
 
     }
@@ -52,11 +45,22 @@ impl PinControler {
         ).expect(format!("Failed to write to {}", path).as_str());
     }
 
+    
+    pub fn blink(&self, duration: std::time::Duration) {
+        loop {
+            self.set_value(Value::HIGH);
+            std::thread::sleep(duration);
+            self.set_value(Value::LOW);
+            std::thread::sleep(duration);
+        }
+    }
+
 }
 
 
 impl Drop for PinControler {
     fn drop(&mut self) {
+        self.set_value(Value::LOW);
         self.gpio.close();
     }
 }

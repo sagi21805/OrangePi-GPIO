@@ -1,16 +1,16 @@
 mod constants;
-mod pin_control;
+mod pin_controller;
 mod utils;
 mod gpio;
-use gpio::*;
 use constants::*;
-use pin_control::*;
+use pin_controller::*;
 use std::thread::sleep;
 use std::time::Duration;
 
 
 #[cfg(test)]
 mod tests {
+
     use super::*;
 
     #[test]
@@ -27,5 +27,12 @@ mod tests {
         }
         assert_eq!(c.get_value().to_string().as_str(), "0");
     }
+
+    #[test]
+    fn motor_control() {
+        let controller = PinControler::new(GPIO_PIN::GPIO1_A3);
+        controller.cycle(Duration::from_micros(2000), Duration::from_millis(10));
+        // assert_eq!(1, 2);
+    }   
 }
 

@@ -3,13 +3,15 @@
 use crate::constants::*;
 use std::fs::File;
 use std::io::prelude::*;
+use std::thread::sleep;
+use std::time::Duration;
 
 pub struct PinControler {
     gpio: GPIO_PIN,
 }
 
 impl PinControler {
-
+    
 
     pub fn new(gpio: GPIO_PIN) -> Self {
         
@@ -54,6 +56,15 @@ impl PinControler {
             std::thread::sleep(duration);
             self.set_value(Value::LOW);
             std::thread::sleep(duration);
+        }
+    }
+
+    pub fn cycle(&self, on_time: Duration, total_time: Duration) {
+        for _ in 0..4 {
+            self.set_value(Value::HIGH);
+            sleep(on_time);
+            self.set_value(Value::LOW);
+            sleep(total_time - on_time);
         }
     }
 

@@ -26,6 +26,10 @@ pub enum GPIO_PIN {
     GPIO4_B3 = 139,
 }
 
+pub enum PWM_PIN {
+    
+}
+
 pub enum Mode {
     IN,
     OUT
